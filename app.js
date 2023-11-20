@@ -1,15 +1,15 @@
 // app.js
 process.setMaxListeners(0)
-const cors = require('cors')
-const fs = require('fs')
 const express = require('express');
+const cors = require('cors')
+const compression = require('compression');
+var http = require('http');
+const fs = require('fs')
 const app = express();
 const chrome = require("chrome-aws-lambda");
 const path = require("path")
 app.use(express.json());
-//const NodeCache = require('node-cache');
-// const compression = require('compression');
-// app.use(compression()); 
+app.use(compression());
 var whitelist = ['https://mbv-svelte.vercel.app', 'http://localhost:5173']
 var corsOptions = {
   origin: function (origin, callback) {
@@ -18,7 +18,8 @@ var corsOptions = {
   }
 }
 app.use(cors(corsOptions))
-//const cache = new NodeCache(); 
+
+
 
 app.get('/', async (req, res) => { res.send({
   body: "Welcome!",
@@ -181,3 +182,28 @@ app.get('/maldives', async (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
+
+function startKeepAlive() {
+  setInterval(function() {
+      var options = {
+          host: 'mbv-api-server.onrender.com',
+          port: 80,
+          path: '/'
+      };
+      http.get(options, function(res) {
+          res.on('data', function(chunk) {
+              try {
+                  // optional logging... disable after it's working
+                  console.log("RESPONSE: " + chunk);
+              } catch (err) {
+                  console.log(err.message);
+              }
+          });
+      }).on('error', function(err) {
+          console.log("Error: " + err.message);
+      });
+  }, 12 * 60 * 1000); // load every 20 minutes
+}
+
+//req every 12 minutes to avoid render.com idle
+startKeepAlive();
