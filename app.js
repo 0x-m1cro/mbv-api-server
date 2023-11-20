@@ -1,6 +1,6 @@
 // app.js
 process.setMaxListeners(0)
-//const cors = require('cors')
+const cors = require('cors')
 const fs = require('fs')
 const express = require('express');
 const app = express();
@@ -10,8 +10,14 @@ app.use(express.json());
 //const NodeCache = require('node-cache');
 // const compression = require('compression');
 // app.use(compression()); 
-
-//app.use(cors())
+var whitelist = ['https://mbv-svelte.vercel.app', 'http://localhost:5173']
+var corsOptions = {
+  origin: function (origin, callback) {
+       var originIsWhitelisted = whitelist.indexOf(origin) !== -1
+       callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted)
+  }
+}
+app.use(cors(corsOptions))
 //const cache = new NodeCache(); 
 
 app.get('/', async (req, res) => { res.send({
