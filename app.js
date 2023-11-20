@@ -179,10 +179,6 @@ app.get('/maldives', async (req, res) => {
   
 })
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
-
 function startKeepAlive() {
   setInterval(function() {
       var options = {
@@ -207,3 +203,8 @@ function startKeepAlive() {
 
 //req every 12 minutes to avoid render.com idle
 startKeepAlive();
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
+
