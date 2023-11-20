@@ -13,8 +13,11 @@ app.use(compression());
 var whitelist = ['https://mbv-svelte.vercel.app', 'http://localhost:5173']
 var corsOptions = {
   origin: function (origin, callback) {
-       var originIsWhitelisted = whitelist.indexOf(origin) !== -1
-       callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted)
+      if (!origin || whitelist.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
   }
 }
 app.use(cors(corsOptions))
