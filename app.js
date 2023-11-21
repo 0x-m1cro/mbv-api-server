@@ -157,6 +157,50 @@ app.get('/scan', async (req, res) => {
     
   });
 
+app.get('/scanner', async (req, res) => {
+    let query = req.query;
+    const { hotelid, checkin, checkout } = query;
+  
+    try {
+        const options = {
+          args: [...chrome.args, '--hide-scrollbars', '--disable-web-security'],
+          executablePath: await chrome.executablePath,
+          headless: "new",
+        };
+        const browser = await chrome.puppeteer.launch(options);
+        const page = await browser.newPage();
+    
+        await page.goto(
+          `https://hotelscan.com/combiner/?pos=zz&locale=en&checkin=${checkin}&checkout=${checkout}&rooms=2&mobile=0&loop=0&country=MV&ef=1&geoid=xmmmamtksdxx&toas=resort&availability=1&deviceNetwork=4g&deviceCpu=20&deviceMemory=8&limit=100&offset=0`,
+          {
+            waitUntil: "networkidle2",
+            timeout: 0
+          }
+        );
+        await page.goto(
+          `https://hotelscan.com/combiner/?pos=zz&locale=en&checkin=${checkin}&checkout=${checkout}&rooms=2&mobile=0&loop=1&country=MV&ef=1&geoid=xmmmamtksdxx&toas=resort&availability=1&deviceNetwork=4g&deviceCpu=20&deviceMemory=8&limit=100&offset=0`,
+          {
+            waitUntil: "networkidle2",
+            timeout: 0
+          }
+        );
+        // let html = await page.evaluate(() => {
+        //   return JSON.parse(document.querySelector("body").innerText);
+        // });
+        let body = await page.waitForSelector('body');
+        let json = await body?.evaluate(el => JSON.parse(el.textContent));
+        await browser.close();   
+        res.status(200).json(json);           
+      } catch (error) {
+        console.log(error); 
+        res.statusCode = 500;
+        res.json({
+          body: "Sorry, Something went wrong!",
+        });
+      }
+      
+    });  
+
 app.get('/maldives', async (req, res) => {  
   // const cacheKey = 'maldives';
   // let cachedData = cache.get(cacheKey);
@@ -201,9 +245,8 @@ function startKeepAlive() {
       }).on('error', function(err) {
           console.log("Error: " + err.message);
       });
-  }, 12 * 60 * 1000); // load every 20 minutes
+  }, 12 * 60 * 1000);  
 }
-
 //req every 12 minutes to avoid render.com idle
 startKeepAlive();
 
