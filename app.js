@@ -227,24 +227,14 @@ app.get('/maldives', async (req, res) => {
 })
 
 function startKeepAlive() {
-  setInterval(function() {
-      var options = {
-          host: 'mbv-api-server.onrender.com',
-          port: 80,
-          path: '/'
-      };
-      http.get(options, function(res) {
-          res.on('data', function(chunk) {
-              try {
-                  // optional logging... disable after it's working
-                  console.log("RESPONSE: " + chunk);
-              } catch (err) {
-                  console.log(err.message);
-              }
-          });
-      }).on('error', function(err) {
-          console.log("Error: " + err.message);
-      });
+  setInterval(async function() {
+      try {
+        const req = await fetch('https://mbv-api-server.onrender.com')
+        const res = await req.text()
+        console.log("StayAliveRes: " + res);
+    } catch (err) {
+        console.log(err.message);
+    }  
   }, 12 * 60 * 1000);  
 }
 //req every 12 minutes to avoid render.com idle
