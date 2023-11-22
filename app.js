@@ -10,7 +10,7 @@ const chrome = require("chrome-aws-lambda");
 const path = require("path")
 app.use(express.json());
 app.use(compression());
-var whitelist = ['https://mbv-svelte.vercel.app', 'http://localhost:5173']
+var whitelist = ['https://maldivesbeachvacation.com/', 'https://www.maldivesbeachvacation.com/', 'https://maldivesbeachvacation.com/*', 'https://mbv-svelte.vercel.app', 'http://localhost:5173']
 var corsOptions = {
   origin: function (origin, callback) {
       if (!origin || whitelist.indexOf(origin) !== -1) {
