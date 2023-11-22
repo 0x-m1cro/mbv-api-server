@@ -159,8 +159,9 @@ app.get('/scan', async (req, res) => {
 
 app.get('/scanner', async (req, res) => {
     let query = req.query;
-    const { hotelid, checkin, checkout } = query;
-  
+    const { adults, child, checkin, checkout } = query;
+    const c = child ? 'f' : ''
+    
     try {
         const options = {
           args: [...chrome.args, '--hide-scrollbars', '--disable-web-security'],
@@ -171,22 +172,19 @@ app.get('/scanner', async (req, res) => {
         const page = await browser.newPage();
     
         await page.goto(
-          `https://hotelscan.com/combiner/?pos=zz&locale=en&checkin=${checkin}&checkout=${checkout}&rooms=2&mobile=0&loop=0&country=MV&ef=1&geoid=xmmmamtksdxx&toas=resort&availability=1&deviceNetwork=4g&deviceCpu=20&deviceMemory=8&limit=100&offset=0`,
+          `https://hotelscan.com/combiner?pos=zz&locale=en&checkin=${checkin}&checkout=${checkout}&rooms=${adults}${c}&mobile=0&loop=0&country=MV&ef=1&geoid=xmmmamtksdxx&toas=hotel%2Cbed_and_breakfast%2Cguest_house%2Cresort&availability=1&deviceNetwork=4g&deviceCpu=20&deviceMemory=8&limit=100&offset=0`,
           {
             waitUntil: "networkidle2",
             timeout: 0
           }
         );
         await page.goto(
-          `https://hotelscan.com/combiner/?pos=zz&locale=en&checkin=${checkin}&checkout=${checkout}&rooms=2&mobile=0&loop=1&country=MV&ef=1&geoid=xmmmamtksdxx&toas=resort&availability=1&deviceNetwork=4g&deviceCpu=20&deviceMemory=8&limit=100&offset=0`,
+          `https://hotelscan.com/combiner?pos=zz&locale=en&checkin=${checkin}&checkout=${checkout}&rooms=${adults}${c}&mobile=0&loop=0&country=MV&ef=1&geoid=xmmmamtksdxx&toas=hotel%2Cbed_and_breakfast%2Cguest_house%2Cresort&availability=1&deviceNetwork=4g&deviceCpu=20&deviceMemory=8&limit=100&offset=0`,
           {
             waitUntil: "networkidle2",
             timeout: 0
           }
-        );
-        // let html = await page.evaluate(() => {
-        //   return JSON.parse(document.querySelector("body").innerText);
-        // });
+        ); 
         let body = await page.waitForSelector('body');
         let json = await body?.evaluate(el => JSON.parse(el.textContent));
         await browser.close();   
