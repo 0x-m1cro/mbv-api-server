@@ -233,7 +233,7 @@ function startKeepAlive() {
     } catch (err) {
         console.log(err.message);
     }  
-  }, 12 * 60 * 1000);  
+  }, 60 * 60 * 1000);  
 }
 //req every 12 minutes to avoid render.com idle
 startKeepAlive();
